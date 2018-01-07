@@ -1,49 +1,71 @@
-pragma solidity ^0.4.20;
+pragma solidity ^0.4.18;
 
 
 contract EtherLotto {
-    address public bank;
+    uint private pot = 0;
+    uint private maxPlayers = 5;
+    uint private numElements = 0;
 
-    mapping(address => uint) pendingReturns;
+    struct Player {
+        address id;
+        uint slot;
+    }
 
-    event NewBetRecieved(address player, uint amount);
+    Player[] public players;
+    Player private winner;
+    mapping (address => uint) private pendingWithdrawals;
+
+    event NewBidRecieved(address player, uint amount);
     event CalculatedNewRandom(uint random);
 
-    // "0xdd870fa1b7c4700f2bd7f44238821c26f7392148"
-    function SimpleAuction(address _bank) public {
-        bank = _bank;
-    }
-
     function bid() public payable {
-        NewBetRecieved(msg.sender, msg.value);
+        NewBidRecieved(msg.sender, msg.value);
 
-        uint random = uint(sha256(block.timestamp)) % 2;
-        CalculatedNewRandom(random);
+        pot += msg.value;
+        insertPlayer(Player(msg.sender, numElements));
 
-        uint bet = msg.value;
+        if (players.length >= maxPlayers) {
+            uint random = getRandom(maxPlayers);
+            CalculatedNewRandom(random);
 
-        if (random == 0) {
-            pendingReturns[msg.sender] += bet;
-        } else {
-            bank.transfer(bet);
+            winner = players[random];
+
+            pendingWithdrawals[winner.id] += pot;
+
+            clear();
         }
     }
 
-    /// Withdraw a bid that was overbid.
-    function withdraw() public returns (bool) {
-        uint amount = pendingReturns[msg.sender];
-        if (amount > 0) {
-            // It is important to set this to zero because the recipient
-            // can call this function again as part of the receiving call
-            // before `send` returns.
-            pendingReturns[msg.sender] = 0;
+    function getPlayersLength() public view returns(uint length) {
+        return numElements;
+    }
 
-            if (!msg.sender.send(amount)) {
-                // No need to call throw here, just reset the amount owing
-                pendingReturns[msg.sender] = amount;
-                return false;
-            }
+    function getPotBalance() public view returns (uint potBalance) {
+        return pot;
+    }
+
+    function withdraw() public {
+        uint amount = pendingWithdrawals[msg.sender];
+        // Remember to zero the pending refund before
+        // sending to prevent re-entrancy attacks
+        pendingWithdrawals[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+
+    function getRandom(uint maximum) public view returns (uint random) {
+        return uint(block.blockhash(block.number-1))%maximum;
+    }
+
+    function insertPlayer(Player newPlayer) internal {
+        if (numElements == players.length) {
+            players.length += 1;
         }
-        return true;
+        players[numElements++] = newPlayer;
+    }
+
+    function clear() internal {
+        numElements = 0;
+        pot = 0;
+        players.length = 0;
     }
 }
