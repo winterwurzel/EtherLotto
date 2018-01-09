@@ -4,14 +4,15 @@ pragma solidity ^0.4.18;
 contract EtherLotto {
     uint private pot = 0;
     uint private maxPlayers = 5;
-    uint private numElements = 0;
+    uint private playerIndex = 0;
+    uint private bidSize = 0.2 ether;
 
     struct Player {
         address id;
         uint slot;
     }
 
-    Player[] public players;
+    Player[] private players;
     Player private winner;
     mapping (address => uint) private pendingWithdrawals;
 
@@ -20,9 +21,11 @@ contract EtherLotto {
 
     function bid() public payable {
         NewBidRecieved(msg.sender, msg.value);
+        require(msg.value == bidSize);
+        require(checkSingleBidPerPlayer(msg.sender) == true);
 
         pot += msg.value;
-        insertPlayer(Player(msg.sender, numElements));
+        insertPlayer(Player(msg.sender, playerIndex));
 
         if (players.length >= maxPlayers) {
             uint random = getRandom(maxPlayers);
@@ -37,7 +40,7 @@ contract EtherLotto {
     }
 
     function getPlayersLength() public view returns(uint length) {
-        return numElements;
+        return playerIndex;
     }
 
     function getPotBalance() public view returns (uint potBalance) {
@@ -57,14 +60,26 @@ contract EtherLotto {
     }
 
     function insertPlayer(Player newPlayer) internal {
-        if (numElements == players.length) {
+        if (playerIndex == players.length) {
             players.length += 1;
         }
-        players[numElements++] = newPlayer;
+        players[playerIndex++] = newPlayer;
+    }
+
+    function checkSingleBidPerPlayer(address newPlayer) internal view returns(bool singleBid) {
+        if (playerIndex == 0) {
+            return true;
+        }
+        for (uint i = 0; i < playerIndex; i++) {
+            if (players[i].id == newPlayer) {
+                return false;
+            }
+        }
+        return true;
     }
 
     function clear() internal {
-        numElements = 0;
+        playerIndex = 0;
         pot = 0;
         players.length = 0;
     }
