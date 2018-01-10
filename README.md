@@ -35,7 +35,8 @@ To run the Webapp, a lokal Ethereum Testnetwork is currently needed. While [Truf
 Either start the [Truffle](http://truffleframework.com/) Testnetwork with `truffle develop` or run [Ganache](http://truffleframework.com/ganache/) (preferred).
 
 Additionally the Browser Extension [MetaMask](https://metamask.io/) is needed.
-Configure [MetaMask](https://metamask.io/) to use the Local Testnetwork and import Accounts through the Mnemonic specified in `truffle develop` or  [Ganache](http://truffleframework.com/ganache/).
+Install and configure [MetaMask](https://metamask.io/) to use the Local Testnetwork and import the first Account through the Mnemonic specified in `truffle develop` or  [Ganache](http://truffleframework.com/ganache/).
+Additional Accounts can be import through their private keys. 
 
 ```
 cd web
