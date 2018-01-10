@@ -1,0 +1,10 @@
+lotto:
+evt. umbau auf seeds von usern benutzen um random zu erzeugen
+seed könnten ect. auch gleich die lotto zahlen sein, die mit dem später erzeugten random matchen müssen
+
+
+
+
+neich https://material.angular.io/guide/getting-started
+
+am besten mit https://cli.angular.io/ a demo installiern und dann migrieren
