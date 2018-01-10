@@ -1,8 +1,9 @@
 import { Component, HostListener, NgZone } from '@angular/core';
 const Web3 = require('web3');
 const contract = require('truffle-contract');
-const metaincoinArtifacts = require('../../build/contracts/MetaCoin.json');
+const etherLottoArtifacts = require('../../build/contracts/EtherLotto.json');
 import { canBeNumber } from '../util/validation';
+import { log } from 'util';
 
 declare var window: any;
 
@@ -11,7 +12,7 @@ declare var window: any;
   templateUrl: './app.component.html'
 })
 export class AppComponent {
-  MetaCoin = contract(metaincoinArtifacts);
+  EtherLotto = contract(etherLottoArtifacts);
 
   // TODO add proper types these variables
   account: any;
@@ -38,13 +39,13 @@ export class AppComponent {
     // Checking if Web3 has been injected by the browser (Mist/MetaMask)
     if (typeof window.web3 !== 'undefined') {
       console.warn(
-        'Using web3 detected from external source. If you find that your accounts don\'t appear or you have 0 MetaCoin, ensure you\'ve configured that source properly. If using MetaMask, see the following link. Feel free to delete this warning. :) http://truffleframework.com/tutorials/truffle-and-metamask'
+        'Using web3 detected from external source.'
       );
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
     } else {
       console.warn(
-        'No web3 detected. Falling back to http://localhost:8545. You should remove this fallback when you deploy live, as it\'s inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask'
+        'No web3 detected. Falling back to http://localhost:8545. More info here: http://truffleframework.com/tutorials/truffle-and-metamask'
       );
       // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
       this.web3 = new Web3(
@@ -55,9 +56,82 @@ export class AppComponent {
 
   onReady = () => {
     // Bootstrap the MetaCoin abstraction for Use.
-    this.MetaCoin.setProvider(this.web3.currentProvider);
+    this.EtherLotto.setProvider(this.web3.currentProvider);
+
+    this.web3.eth.getAccounts((err, accs) => {
+      if (err != null) {
+        alert('There was an error fetching your accounts.');
+        return;
+      }
+
+      if (accs.length === 0) {
+        alert(
+          'Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.'
+        );
+        return;
+      }
+      this.accounts = accs;
+      this.account = this.accounts[0];
+    });
+  };
+
+  withdraw = () => {
+    this.EtherLotto
+      .deployed()
+      .then(instance => {
+        return instance.withdraw({from: this.account}).then(bool => {
+          console.log(bool);
+      });
+    }).then(() => {
+      console.log('Withdraw complete!');
+      // self.refreshBalance();
+    }).catch(function(e) {
+      console.log(e);
+      // self.setStatus("Error sending coin; see log.");
+    });
+  };
+
+  play = () => {
+    const amount = 0.2 * Math.pow(10, 18);
+
+    console.log(this.account);
+
+    this.EtherLotto.deployed().then(instance => {
+      return instance.bid({from: this.account, value: amount})
+        .then(result => {
+          for (let i = 0; i < result.logs.length; i++) {
+            let log = result.logs[i];
+
+            if (log.event === 'NewBidRecieved') {
+              console.log('player: ', log.args.player);
+              console.log('amount: ', log.args.amount.toNumber());
+            }
+            if (log.event === 'CalculatedNewRandom') {
+              console.log('random: ', log.args.random.toNumber());
+            }
+          }
+      });
+    }).then(() => {
+      console.log('Transaction complete!');
+      // self.refreshBalance();
+    }).catch(e => {
+      console.log(e);
+      // self.setStatus("Error sending coin; see log.");
+    });
+  };
+
+  getBalance = () => {
+    this.web3.eth.getBalance(this.account, (err, result) => {
+      if (!err) {
+          console.log(result.toNumber());
+      } else {
+          console.error(err);
+      }
+    });
+  };
 
     // Get the initial account balance so it can be displayed.
+    /*
     this.web3.eth.getAccounts((err, accs) => {
       if (err != null) {
         alert('There was an error fetching your accounts.');
@@ -83,7 +157,7 @@ export class AppComponent {
 
   refreshBalance = () => {
     let meta;
-    this.MetaCoin
+    this.EtherLotto
       .deployed()
       .then(instance => {
         meta = instance;
@@ -111,7 +185,7 @@ export class AppComponent {
 
     this.setStatus('Initiating transaction... (please wait)');
 
-    this.MetaCoin
+    this.EtherLotto
       .deployed()
       .then(instance => {
         meta = instance;
@@ -127,5 +201,5 @@ export class AppComponent {
         console.log(e);
         this.setStatus('Error sending coin; see log.');
       });
-  };
+    */
 }

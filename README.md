@@ -16,6 +16,8 @@ A simple Ethereum Dapp (Distributed Application) using the [Truffle Framework](h
 Requires npm.
 
 ```
+npm install -g truffle
+npm install -g @angular/cli
 git clone https://github.com/winterwurzel/EtherLotto.git && cd web
 npm install
 ```
