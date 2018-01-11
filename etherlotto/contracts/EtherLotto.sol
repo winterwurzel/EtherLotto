@@ -22,7 +22,7 @@ contract EtherLotto {
     function bid() public payable {
         NewBidRecieved(msg.sender, msg.value);
         require(msg.value == bidSize);
-        require(checkSingleBidPerPlayer(msg.sender) == true);
+        // require(checkSingleBidPerPlayer(msg.sender) == true);
 
         pot += msg.value;
         insertPlayer(Player(msg.sender, playerIndex));
@@ -68,6 +68,7 @@ contract EtherLotto {
         players[playerIndex++] = newPlayer;
     }
 
+    // disabled for now
     function checkSingleBidPerPlayer(address newPlayer) internal view returns(bool singleBid) {
         if (playerIndex == 0) {
             return true;

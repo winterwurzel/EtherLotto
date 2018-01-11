@@ -1,13 +1,23 @@
-<mat-toolbar>
-  <button mat-button>EtherLotto</button>
-  <!-- This fills the remaining space of the current row -->
-  <span class="example-fill-remaining-space"></span>
-  <button mat-button>About</button>
+<mat-toolbar color="primary">
+  <span>EtherLotto</span>
 </mat-toolbar>
 
-<button mat-raised-button color="primary" (click)="play()">Bid</button>
-<button mat-raised-button color="primary" (click)="withdraw()">Withdraw</button>
-<button mat-raised-button color="primary" (click)="getBalance()">Check Balance</button>
+<div class="app-content">
+
+  <mat-card>
+    <mat-card-content>
+      <h1 class="title is-4 is-info help">{{status}}</h1>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-content>
+      <button mat-raised-button color="primary" (click)="play()">Bid</button>
+      <button mat-raised-button color="primary" (click)="withdraw()">Withdraw</button>
+      <button mat-raised-button color="primary" (click)="getBalance()">Check Balance</button>
+    </mat-card-content>
+  </mat-card>
+</div>
 
 <!--
 <div class="container">

@@ -9,7 +9,8 @@ declare var window: any;
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html'
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
   EtherLotto = contract(etherLottoArtifacts);
@@ -19,11 +20,7 @@ export class AppComponent {
   accounts: any;
   web3: any;
 
-  balance: number;
-  sendingAmount: number;
-  recipientAddress: string;
   status: string;
-  canBeNumber = canBeNumber;
 
   constructor(private _ngZone: NgZone) {
 
@@ -72,6 +69,12 @@ export class AppComponent {
       }
       this.accounts = accs;
       this.account = this.accounts[0];
+      
+      // This is run from window:load and ZoneJS is not aware of it we
+      // need to use _ngZone.run() so that the UI updates on promise resolution
+      this._ngZone.run(() =>
+        this.getBalance()
+      );
     });
   };
 
@@ -79,9 +82,7 @@ export class AppComponent {
     this.EtherLotto
       .deployed()
       .then(instance => {
-        return instance.withdraw({from: this.account}).then(bool => {
-          console.log(bool);
-      });
+        return instance.withdraw({from: this.account});
     }).then(() => {
       console.log('Withdraw complete!');
       // self.refreshBalance();
@@ -92,7 +93,7 @@ export class AppComponent {
   };
 
   play = () => {
-    const amount = 0.2 * Math.pow(10, 18);
+    const amount = this.web3.toWei(0.2, 'ether');
 
     console.log(this.account);
 
@@ -104,7 +105,7 @@ export class AppComponent {
 
             if (log.event === 'NewBidRecieved') {
               console.log('player: ', log.args.player);
-              console.log('amount: ', log.args.amount.toNumber());
+              console.log('amount: ', this.web3.fromWei(log.args.amount.toNumber()));
             }
             if (log.event === 'CalculatedNewRandom') {
               console.log('random: ', log.args.random.toNumber());
@@ -123,11 +124,16 @@ export class AppComponent {
   getBalance = () => {
     this.web3.eth.getBalance(this.account, (err, result) => {
       if (!err) {
-          console.log(result.toNumber());
+        let balance = this.web3.fromWei(result.toNumber());
+        this.setStatus('Current Balance: ' + balance + ' ETH');
       } else {
-          console.error(err);
+        console.error(err);
       }
     });
+  };
+
+  setStatus = message => {
+    this.status = message;
   };
 
     // Get the initial account balance so it can be displayed.

@@ -3,8 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { AppComponent } from './app.component';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule, MatCardModule, MatButtonModule } from '@angular/material';
 
 @NgModule({
   imports: [
@@ -12,7 +11,8 @@ import { MatButtonModule } from '@angular/material/button';
     FormsModule,
     HttpModule,
     MatToolbarModule,
-    MatButtonModule
+    MatButtonModule,
+    MatCardModule
   ],
   declarations: [
     AppComponent
