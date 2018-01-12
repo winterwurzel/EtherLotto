@@ -1,3 +1,28 @@
+teilweise realisiert in EtherLottoRAND.sol
+
 lotto:
 evt. umbau auf seeds von usern benutzen um random zu erzeugen (https://github.com/randao/randao)
 seed könnten evt. auch gleich die lotto zahlen sein, die mit dem später erzeugten random matchen müssen
+
+keccak256, number: bytes32 
+1 = "0xb10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf6"
+2 = "0x405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ace"
+3 = "0xc2575a0e9e593c00f959f8c92f12db2869c3395a3b0502d05e2516446f71f85b"
+
+momentan nur 1 tipp pro user moeglich
+
+problem: alle user müssen zum reveal-zeitpunkt anwesend sein und deren secrets revealen
+
+
+EtherLotto contract v2:
+users have to bid fixed amount of EtherLotto
+users can choose numbers to bid on (numbers between 1-999)
+after a predefined period of time, a random number will be generated
+if any user submitted the generated number with his bid, he wins and can withdraw the whole pot
+if there are two or more winners, the pot gets split
+if there are no winners, the pot can be won during the next round
+
+random will be generated from the next blockhash
+this is potentially manipulateable, because miners could influence the next blockhash
+but for small amounts of money, the manipulation is not feasable
+

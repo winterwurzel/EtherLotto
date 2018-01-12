@@ -1,0 +1,90 @@
+<mat-toolbar color="primary">
+  <span>EtherLotto</span>
+</mat-toolbar>
+
+<div class="app-content">
+
+  <mat-card>
+    <mat-card-content>
+      <h1 class="title is-4 is-info help">{{status}}</h1>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-content>
+      <form #bidForm="ngForm">
+        <mat-form-field>
+          <input matInput [(ngModel)]="luckyNumber" name="luckyNumber" #luckyNumberModel 
+            type="number" maxlength="3" placeholder="Lucky Number" value="">
+          <mat-hint align="end">{{luckyNumberModel.value.length}} / 3</mat-hint>
+        </mat-form-field>
+      </form>
+      <button mat-raised-button color="primary" [disabled]="!bidForm.valid" (click)="play()">Bid</button>
+      <button mat-raised-button color="primary" (click)="withdraw()">Withdraw</button>
+      <button mat-raised-button color="primary" (click)="getBalance()">Check Balance</button>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-content>
+      <h1 class="title is-4 is-info help">Past Lottery Winners</h1>
+      <!--
+      <form #winnerForm="ngForm">
+        <mat-form-field>
+          <input matInput [(ngModel)]="pastWinnerNumber" name="pastWinnerNumber" #pastWinnerNumberModel 
+            type="number" maxlength="3" placeholder="pastWinnerNumber" value="">
+          <mat-hint align="end">{{pastWinnerNumberModel.value.length}} / 3</mat-hint>
+        </mat-form-field>
+        <button mat-raised-button color="primary" [disabled]="!winnerForm.valid" (click)="buttonPastWinnerData()">GetWinners</button>
+      </form>
+      -->
+      <div>
+        <mat-table #table [dataSource]="dataSource" matSort>
+            <ng-container matColumnDef="position">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> No. </mat-header-cell>
+              <mat-cell *matCellDef="let winner"> {{winner.position}} </mat-cell>
+            </ng-container>
+        
+            <ng-container matColumnDef="address">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> address </mat-header-cell>
+              <mat-cell *matCellDef="let winner"> {{winner.address}} </mat-cell>
+            </ng-container>
+        
+            <ng-container matColumnDef="luckyNumber">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> luckyNumber </mat-header-cell>
+              <mat-cell *matCellDef="let winner"> {{winner.luckyNumber}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="amountWon">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> amountWon </mat-header-cell>
+                <mat-cell *matCellDef="let winner"> {{winner.amountWon}} </mat-cell>
+              </ng-container>
+
+            <ng-container matColumnDef="winningTime">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> winningTime </mat-header-cell>
+              <mat-cell *matCellDef="let winner"> {{winner.winningTime}} </mat-cell>
+            </ng-container>
+        
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+          </mat-table>
+        </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-content>
+      <h1 class="title is-4 is-info help">DevTools</h1>
+      <button mat-raised-button color="primary" (click)="getState()">getState</button>
+      <button mat-raised-button color="primary" (click)="setNextState()">nextState</button>
+      <button mat-raised-button color="primary" (click)="chooseWinner()">chooseWinner</button>
+      <button mat-raised-button color="primary" (click)="getPotBalance()">getPotBalance</button>
+      <button mat-raised-button color="primary" (click)="getPlayersCount()">getPlayersCount</button>
+      <button mat-raised-button color="primary" (click)="getPastWinnersCount()">getPastWinnersCount</button>
+      <button mat-raised-button color="primary" (click)="getDuration()">getDuration</button>
+      <button mat-raised-button color="primary" (click)="getCreationTime()">getCreationTime</button>
+    </mat-card-content>
+  </mat-card>
+  
+</div>
+

@@ -1,0 +1,19 @@
+.app-content {
+  padding: 5px;
+}
+
+.app-content mat-card {
+  margin: 5px;
+}
+
+.app-toolbar-filler {
+  flex: 1 1 auto;
+}
+
+.mat-table {
+  overflow: auto;
+}
+
+.mat-header-cell.mat-sort-header-sorted {
+  color: black;
+}
