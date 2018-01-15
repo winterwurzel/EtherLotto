@@ -100,3 +100,5 @@ Thumbs.db
 
 .DS_Store
 /etherlotto/build/*
+
+etherlotto_v2/build/contracts/
