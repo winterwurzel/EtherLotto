@@ -2,12 +2,26 @@
 
 A simple Ethereum Dapp (Distributed Application) using the [Truffle Framework](http://truffleframework.com/) to play Lotto with other users.
 
-## Rules
+## Rules v2
 
-* Each Player can only bid the predefined value of 0.2 ETH.
-* Each Player can only bid once. Enforced by checking the Players ETH Address is unique.
-* After a predefined amount of bids (currently 5), a random winner will be picked.
-* The Winner gets the whole Pot. In this case 5 * 0.2 = 1 ETH.
+* Users have to bid fixed amount of EtherLotto (0.2 ETH)
+* Users can choose number to bid on (number between 1-999)
+* after a predefined period of time, a random number will be generated
+* if any user submitted the generated number with his bid, he wins and can withdraw the whole pot
+* if there are two or more winners, the pot gets split
+* if there are no winners, the pot can be won during the next round
+
+## Random Generation
+
+The random will be generated from the next blockhash.
+This is potentially manipulateable, because miners could influence the next blockhash.
+But for small amounts of money, the manipulation is not feasable.
+
+
+## Todo
+
+* terminal application to automatically transition between states
+* possible: python, node, geth (https://github.com/ethereum/go-ethereum)
 
 ## Setup
 
