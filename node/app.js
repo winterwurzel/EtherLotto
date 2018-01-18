@@ -22,7 +22,7 @@ const loop = async () => {
     let now = new Date();
 
     // var state = await contract.methods.getState().call();
-    if (now >= endTime) {
+    if (now > endTime) {
         console.log(new Date() + ' - choosing winner, endTime: ' + endTime);     
         
         var txCount = await web3.eth.getTransactionCount(address);
@@ -32,7 +32,7 @@ const loop = async () => {
             nonce: web3.utils.toHex(txCount),
             to: contractAddress,
             gasPrice: web3.utils.toHex(20000000000), 
-            gasLimit: web3.utils.toHex(500000),
+            gasLimit: web3.utils.toHex(5000000),
             data: encodedABI
         }
                 
