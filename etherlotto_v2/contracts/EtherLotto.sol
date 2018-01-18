@@ -10,7 +10,7 @@ contract EtherLotto {
     // This is the current stage.
     States private state = States.AcceptingBids;
     uint private creationTime = now;
-    uint private duration = 5 days;
+    uint private duration = 15 minutes;
 
     enum States {
         AcceptingBids,

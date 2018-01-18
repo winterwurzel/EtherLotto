@@ -1,5 +1,5 @@
 import { Component, HostListener, NgZone, ViewChild } from '@angular/core';
-import { MatTableDataSource, MatSort } from '@angular/material';
+import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
 const Web3 = require('web3');
 const contract = require('truffle-contract');
 const etherLottoArtifacts = require('../../build/contracts/EtherLotto.json');
@@ -19,12 +19,15 @@ export class AppComponent {
   web3: any;
 
   status: string;
+  pot: string;
+  endTime: string;
   luckyNumber: number;
   pastWinnerNumber: number;
 
   displayedColumns = ['position', 'address', 'luckyNumber', 'amountWon', 'winningTime'];
   dataSource = new MatTableDataSource();
 
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(private _ngZone: NgZone) {
@@ -32,6 +35,7 @@ export class AppComponent {
   }
 
   ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
@@ -62,7 +66,6 @@ export class AppComponent {
   };
 
   onReady = () => {
-    // Bootstrap the MetaCoin abstraction for Use.
     this.EtherLotto.setProvider(this.web3.currentProvider);
 
     this.web3.eth.getAccounts((err, accs) => {
@@ -80,13 +83,21 @@ export class AppComponent {
       this.accounts = accs;
       this.account = this.accounts[0];
 
-      this.getBalance();
-      this.getPastWinnersCount();
+      this.setWinnerData();
+      this.refreshStats();
     });
   };
 
   setStatus = message => {
     this.status = message;
+  };
+
+  setPot = message => {
+    this.pot = message;
+  };
+
+  setEndTime = message => {
+    this.endTime = message;
   };
 
   withdraw = () => {
@@ -129,19 +140,30 @@ export class AppComponent {
     }).then(() => {
       console.log('Transaction complete!');
       this.getBalance();
+      this.getPotBalance();
     }).catch(e => {
       console.log(e);
       this.setStatus('Error sending coins; see log.');
     });
   };
 
-  getPotBalance = () => {
-    this.EtherLotto.deployed().then(instance => {
-      return instance.getPotBalance()
-      .then(result => {
-        console.log('Pot Balance: ' + result);
-      });
-    });
+  refreshStats = async () => {
+    await this.getPotBalance();
+    await this.getBalance();
+    await this.refreshEndTime();
+    console.log('Refresh Finished');
+  };
+
+  refreshPotBalance = () => {
+    this.getPotBalance();
+    setTimeout(this.refreshPotBalance, 1000 * 60); // 1000 milliseconds * 60 = 1 minute
+  };
+
+  getPotBalance = async () => {
+    let instance = await this.EtherLotto.deployed();
+    let result = await instance.getPotBalance();
+    const pot = 'Current Pot Balance: ' + this.web3.fromWei(Number(result), 'ether') + ' ETH';
+    this.setPot(pot);
   };
 
   getPlayersCount = () => {
@@ -153,56 +175,73 @@ export class AppComponent {
     });
   };
 
-  getPastWinnersCount = () => {
-    this.EtherLotto.deployed().then(instance => {
-      return instance.getPastWinnersCount()
-      .then(result => {
-        console.log('Past Winners Count: ' + result);
-        for (let i = 0; i < Number(result); i++) {
-          this.getPastWinnerData(0);
-        }
-      });
-    });
+  getPastWinnersCount = async () => {
+    let instance = await this.EtherLotto.deployed();
+    let count = await instance.getPastWinnersCount();
+    //console.log('Past Winners Count: ' + count);
+    return count;
   };
 
-  buttonPastWinnerData = () => {
-    this.getPastWinnerData(this.pastWinnerNumber);
+  setWinnerData = async () => {
+    let count = await this.getPastWinnersCount();
+    for (let i = 0; i < Number(count); i++) {
+      this.getPastWinnerData(i);
+    }
   }
 
-  getPastWinnerData = pastWinnerNumber => {
-    this.EtherLotto.deployed().then(instance => {
-      return instance.getPastWinnerData(pastWinnerNumber)
-      .then(result => {
-        console.log('Past Winners Data: ' + result);
-        const results = ('' + result).split(',');
+  refreshWinnerData = () => {
+    this.dataSource = new MatTableDataSource();
+    this.ngAfterViewInit();
+    this.setWinnerData();
+  }
 
-        this._ngZone.run(() => {
-          this.dataSource.data.push(new Winner(this.dataSource.data.length + 1,
-            results[0], Number(results[1]), Number(results[2]), results[3]));
-          this.dataSource._updateChangeSubscription();
-          console.log(this.dataSource.data);
-        });
-      });
+  getPastWinnerData = async pastWinnerNumber => {
+    let instance = await this.EtherLotto.deployed();
+    let winnerData = await instance.getPastWinnerData(pastWinnerNumber);
+    //console.log('Past Winners Data: ' + winnerData);
+    const results = ('' + winnerData).split(',');
+
+    this._ngZone.run(() => {
+      this.dataSource.data.push(new Winner(this.dataSource.data.length + 1,
+        results[0], Number(results[1]), this.web3.fromWei(Number(results[2]), 'ether'), this.getDateTimeString(results[3])));
+      this.dataSource._updateChangeSubscription();
+      //console.log(this.dataSource.data);
     });
   };
 
-  getDuration = () => {
-    this.EtherLotto.deployed().then(instance => {
-      return instance.getDuration()
-      .then(result => {
-        console.log('Duration: ' + result);
-      });
-    });
+  getDuration = async () => {
+    let instance = await this.EtherLotto.deployed();
+    let durationTime = await instance.getDuration();
+    //console.log('Duration: ' + durationTime + ' Seconds');
+
+    return durationTime;
   };
 
-  getCreationTime = () => {
-    this.EtherLotto.deployed().then(instance => {
-      return instance.getCreationTime()
-      .then(result => {
-        console.log('Creation Time: ' + result);
-      });
-    });
+  getCreationTime = async () => {
+    let instance = await this.EtherLotto.deployed();
+    let crTime = await instance.getCreationTime();
+    //console.log('Creation Time: ' + crTime);
+
+    return crTime;
   };
+
+  getEndTime = async () => {
+    let startTime = await this.getCreationTime();
+    let durationTime = await this.getDuration();
+    let endTime = Number(startTime) + Number(durationTime);
+    //console.log('End Time for current Game: ' + endTime);
+
+    return endTime;
+  }
+
+  refreshEndTime = async () => {
+    let end = await this.getEndTime();
+    let endFormat = this.getDateTimeString(end);
+
+    this._ngZone.run(() => {
+      this.setEndTime('Lottery ends at: ' + endFormat);
+    });
+  }
 
   chooseWinner = () => {
     this.EtherLotto.deployed().then(instance => {
@@ -233,11 +272,10 @@ export class AppComponent {
     });
   };
 
-
   getBalance = () => {
     this.web3.eth.getBalance(this.account, (err, result) => {
       if (!err) {
-        const bal = 'Current Balance: ' + this.web3.fromWei(result.toNumber()) + ' ETH';
+        const bal = 'Your Current Balance: ' + this.web3.fromWei(result.toNumber()) + ' ETH';
         this._ngZone.run(() => {
           this.setStatus(bal);
         });
@@ -245,6 +283,12 @@ export class AppComponent {
         console.error(err);
       }
     });
+  };
+
+  getDateTimeString = (unixTime) => {
+    let iso = new Date();
+    iso.setTime(unixTime * 1000);
+    return iso.toLocaleString();
   };
 }
 

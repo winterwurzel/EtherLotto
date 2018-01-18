@@ -7,6 +7,11 @@
   <mat-card>
     <mat-card-content>
       <h1 class="title is-4 is-info help">{{status}}</h1>
+      <h1 class="title is-4 is-info help">{{pot}}</h1>
+      <h1 class="title is-4 is-info help">{{endTime}}</h1>
+      <div>
+        <button mat-raised-button color="primary" (click)="refreshStats()">Refresh</button>
+      </div>
     </mat-card-content>
   </mat-card>
 
@@ -19,55 +24,51 @@
           <mat-hint align="end">{{luckyNumberModel.value.length}} / 3</mat-hint>
         </mat-form-field>
       </form>
-      <button mat-raised-button color="primary" [disabled]="!bidForm.valid" (click)="play()">Bid</button>
+      <button mat-raised-button color="primary" (click)="play()">Bid</button>
       <button mat-raised-button color="primary" (click)="withdraw()">Withdraw</button>
-      <button mat-raised-button color="primary" (click)="getBalance()">Check Balance</button>
     </mat-card-content>
   </mat-card>
 
   <mat-card>
     <mat-card-content>
       <h1 class="title is-4 is-info help">Past Lottery Winners</h1>
-      <!--
-      <form #winnerForm="ngForm">
-        <mat-form-field>
-          <input matInput [(ngModel)]="pastWinnerNumber" name="pastWinnerNumber" #pastWinnerNumberModel 
-            type="number" maxlength="3" placeholder="pastWinnerNumber" value="">
-          <mat-hint align="end">{{pastWinnerNumberModel.value.length}} / 3</mat-hint>
-        </mat-form-field>
-        <button mat-raised-button color="primary" [disabled]="!winnerForm.valid" (click)="buttonPastWinnerData()">GetWinners</button>
-      </form>
-      -->
       <div>
         <mat-table #table [dataSource]="dataSource" matSort>
             <ng-container matColumnDef="position">
-              <mat-header-cell *matHeaderCellDef mat-sort-header> No. </mat-header-cell>
-              <mat-cell *matCellDef="let winner"> {{winner.position}} </mat-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="pos"> No. </mat-header-cell>
+              <mat-cell *matCellDef="let winner" class="pos"> {{winner.position}} </mat-cell>
             </ng-container>
         
             <ng-container matColumnDef="address">
-              <mat-header-cell *matHeaderCellDef mat-sort-header> address </mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Address </mat-header-cell>
               <mat-cell *matCellDef="let winner"> {{winner.address}} </mat-cell>
             </ng-container>
         
             <ng-container matColumnDef="luckyNumber">
-              <mat-header-cell *matHeaderCellDef mat-sort-header> luckyNumber </mat-header-cell>
-              <mat-cell *matCellDef="let winner"> {{winner.luckyNumber}} </mat-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="winNum"> Winning Number </mat-header-cell>
+              <mat-cell *matCellDef="let winner" class="winNum"> {{winner.luckyNumber}} </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="amountWon">
-                <mat-header-cell *matHeaderCellDef mat-sort-header> amountWon </mat-header-cell>
-                <mat-cell *matCellDef="let winner"> {{winner.amountWon}} </mat-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header class="amount"> ETH Won </mat-header-cell>
+                <mat-cell *matCellDef="let winner" class="amount"> {{winner.amountWon}} </mat-cell>
               </ng-container>
 
             <ng-container matColumnDef="winningTime">
-              <mat-header-cell *matHeaderCellDef mat-sort-header> winningTime </mat-header-cell>
-              <mat-cell *matCellDef="let winner"> {{winner.winningTime}} </mat-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="time"> Winning Time </mat-header-cell>
+              <mat-cell *matCellDef="let winner" class="time"> {{winner.winningTime}} </mat-cell>
             </ng-container>
         
             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
           </mat-table>
+          <mat-paginator #paginator
+                         [pageSize]="5"
+                         [pageSizeOptions]="[5, 10, 20]">
+          </mat-paginator>
+        </div>
+        <div>
+          <button mat-raised-button color="primary" (click)="refreshWinnerData()">Refresh</button>
         </div>
     </mat-card-content>
   </mat-card>
@@ -78,11 +79,6 @@
       <button mat-raised-button color="primary" (click)="getState()">getState</button>
       <button mat-raised-button color="primary" (click)="setNextState()">nextState</button>
       <button mat-raised-button color="primary" (click)="chooseWinner()">chooseWinner</button>
-      <button mat-raised-button color="primary" (click)="getPotBalance()">getPotBalance</button>
-      <button mat-raised-button color="primary" (click)="getPlayersCount()">getPlayersCount</button>
-      <button mat-raised-button color="primary" (click)="getPastWinnersCount()">getPastWinnersCount</button>
-      <button mat-raised-button color="primary" (click)="getDuration()">getDuration</button>
-      <button mat-raised-button color="primary" (click)="getCreationTime()">getCreationTime</button>
     </mat-card-content>
   </mat-card>
   
