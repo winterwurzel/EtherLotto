@@ -1,0 +1,47 @@
+%**********************************************************************
+
+%---------------------------------------------------
+% NOTE:
+% English version of the abstract is always required 
+% (even for German BA/MAs)
+%---------------------------------------------------
+
+% right side/flush
+\chapterend
+
+\begin{titlepage}
+
+\begin{otherlanguage}{english} 
+\begin{abstract} % Abstract
+
+Write your abstract here. (Note: the abstract should contain the whole work\footnote{Learn from others. For examples, read the abstract of paper \url{https://arxiv.org/abs/1609.03677}. Did you notice the \emph{Current Status}, the \emph{Problem}, the \emph{Innovation}, the \emph{Approach/Method} as well as the \emph{Results} and the \emph{Improvements achieved}? }  -- especially the results).
+
+\end{abstract}
+\end{otherlanguage}
+
+
+\end{titlepage}
+
+
+%---------------------------------------------------
+% NOTE:
+% German version of the abstract "Zusammenfassung"
+% is ONLY required (for German BA/MAs)
+%---------------------------------------------------
+
+\ifthenelse{\equal{\yourLanguage}{german}}{
+\begin{titlepage}
+\begin{otherlanguage}{german}
+\begin{abstract}  % Zusammenfassung
+
+Zusammenfassung. (Sollte das gesamte Werk enthalten, also das spannende Problem, den gewählten --neuartigen-- Lösungsansatz und natürlich vor allem die erreichten Resultate).
+
+\end{abstract}
+\end{otherlanguage}
+\end{titlepage}
+
+}{ % English Version 
+% already inserted above
+}
+
+%**********************************************************************

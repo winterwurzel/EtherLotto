@@ -102,3 +102,19 @@ Thumbs.db
 /etherlotto/build/*
 
 etherlotto_v2/build/contracts/
+
+
+# latex
+*.aux
+*.bbl
+*.bcl
+*.blg
+*.fls
+*.lof
+*.lot
+*.out
+*.toc
+*.bcf
+*.fdb_latexmk
+*.run.xml
+*.synctex.gz

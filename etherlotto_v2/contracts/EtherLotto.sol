@@ -7,7 +7,7 @@ contract EtherLotto {
     uint private maximum = 3;
     //uint private maximum = 999;
 
-    // This is the current stage.
+    // This is the current state.
     States private state = States.AcceptingBids;
     uint private creationTime = now;
     uint private duration = 15 minutes;

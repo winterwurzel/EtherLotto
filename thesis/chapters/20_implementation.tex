@@ -1,0 +1,171 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Implementation}\label{chap:impl}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapterstart
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Solidity}\label{sec:solidity}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The implementation of the Ethereum Smart Contract can be done in various programming languages. However, the most common and well documented one is Solidity and was therefore chosen for this project work.
+
+Solidity is a contract-oriented, high-level language for implementing smart contracts. It was influenced by C++, Python and JavaScript and is designed to target the \ac{EVM}.
+
+Solidity is statically typed, supports inheritance, libraries and complex user-defined types among other features.
+
+
+A simple Example in Solidity:
+\begin{lstlisting}[language=Solidity]
+pragma solidity ^0.4.0; // defines the solidity version
+
+contract SimpleStorage { // = collection of functions and data
+    uint storedData; // unsigned integer variable
+
+    // public setter
+    function set(uint x) public {
+        storedData = x;
+    }
+
+    // public getter
+    function get() public constant returns (uint) {
+        return storedData;
+    }
+}
+\end{lstlisting}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lottery States}\label{sec:states}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A lottery usually goes through several states. From the start of the lottery, where bids are accepted, to the drawing of the winner and payout of the sum won.
+
+Therefore in Solidity the following states where defined using Enums:
+
+\begin{lstlisting}[language=Solidity]
+// This is the current state.
+States private state = States.AcceptingBids;
+
+    enum States {
+    AcceptingBids,
+    ChooseWinner,
+    Reset
+}
+\end{lstlisting}
+
+An Enum is a way in Solidity to create a user-defined type. They are explicitly convertible to and from all integer types but implicit conversion is not allowed. The explicit conversions check the value ranges at runtime and a failure causes an exception. Enums needs at least one member.
+
+Based on these Enums and the variable state, it is possible to determine the current state of the Lottery and make only specific function available.
+
+To transition between these states, custom function modifiers can be created. These modifiers not only handle the transition between states, but also restrict access to functions not allowed in the current state.
+
+\begin{lstlisting}[language=Solidity]
+// modifier to restrict access
+modifier atState(States _state) {
+    // throws exception if condition not met
+    require(state == _state);
+    
+    // code from the function being modified is inserted here
+    _;
+}
+
+// function so set the next state
+function nextState() internal {
+    // increment state by 1
+    state = States(uint(state) + 1);
+}
+
+// modifier to trasition to the next state after function execution
+modifier transitionNext() {
+    // code from the function being modified is inserted here
+    _;
+    
+    nextState();
+}
+
+// transistion modifier with time condition
+modifier timedTransitions() {
+    if (state == States.AcceptingBids && now >= creationTime + duration)
+        nextState();
+        
+    // code from the function being modified is inserted here
+    _;
+}
+\end{lstlisting}
+
+A modifier can then simply be added to a function declaration.
+
+\begin{lstlisting}[language=Solidity]
+// only possible to call when state = Reset
+function clear() public atState(States.Reset) {
+    playerIndex = 0;
+    players.length = 0;
+    winnerIndex = 0;
+    winners.length = 0;
+    state = States.AcceptingBids;
+    creationTime = now;
+}
+\end{lstlisting}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Player and Winner data struct}\label{sec:structs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+To save players, determine winners and in turn also save them, custom data types where necessary.
+
+In Solidity this can be realized via Structs and is somewhat similar to Structs in C/C++.
+
+\begin{lstlisting}[language=Solidity]
+struct Player {
+    address id; // Ethereum address
+    uint index; // player index
+    uint luckyNumber; // number the player bet on
+}
+
+// array of players
+Player[] private players;
+uint private playerIndex = 0;
+
+// array of winners in the current round
+Player[] private winners;
+uint private winnerIndex = 0;
+
+
+struct PastWinner {
+    Player player; // the player who won
+    uint amount; // the amount won
+    uint winningTime; // the time the player won
+}
+
+// array of all-time winners
+PastWinner[] private pastWinners;
+\end{lstlisting}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Events}\label{sec:events}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Events allow the convenient usage of the \ac{EVM} logging facilities, which in turn can be used to trigger JavaScript callbacks in the user interface of a \ac{DApp}, which listen for these events.
+
+However, in this Project Work Events are simply used to log relevent information.
+
+
+\begin{lstlisting}[language=Solidity]
+// event declaration
+event NewBidRecieved(address id, uint index, uint amount, uint luckyNumber);
+event CalculatedNewRandom(uint random);
+event StateChanged(States state);
+
+
+function nextState() internal {
+    state = States(uint(state) + 1);
+    // trigger event
+    StateChanged(state);
+}
+\end{lstlisting}
+
+\chapterend
+
