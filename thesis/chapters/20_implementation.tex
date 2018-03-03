@@ -5,7 +5,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Solidity}\label{sec:solidity}
+\section{ Smart Contract with Solidity}\label{sec:solidity}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The implementation of the Ethereum Smart Contract can be done in various programming languages. However, the most common and well documented one is Solidity and was therefore chosen for this project work.
@@ -36,7 +36,7 @@ contract SimpleStorage { // = collection of functions and data
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Lottery States}\label{sec:states}
+\subsection{Lottery States}\label{sec:states}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 A lottery usually goes through several states. From the start of the lottery, where bids are accepted, to the drawing of the winner and payout of the sum won.
@@ -110,7 +110,7 @@ function clear() public atState(States.Reset) {
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Player and Winner data struct}\label{sec:structs}
+\subsection{Player and Winner data struct}\label{sec:structs}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 To save players, determine winners and in turn also save them, custom data types where necessary.
@@ -145,7 +145,7 @@ PastWinner[] private pastWinners;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Events}\label{sec:events}
+\subsection{Events}\label{sec:events}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Events allow the convenient usage of the \ac{EVM} logging facilities, which in turn can be used to trigger JavaScript callbacks in the user interface of a \ac{DApp}, which listen for these events.
@@ -166,6 +166,115 @@ function nextState() internal {
     StateChanged(state);
 }
 \end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Placing a bid}\label{sec:bet}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The following function can be called to place a new bid:
+
+\begin{lstlisting}[language=Solidity]
+function bid(uint _luckyNumber) public payable timedTransitions atState(States.AcceptingBids) {
+    // check correct amount sent
+    require(msg.value == bidSize);
+    // check numbe rin range
+    require(_luckyNumber != 0 && _luckyNumber < (maximum + 1)); 
+
+    // trigger event
+    NewBidRecieved(msg.sender, playerIndex, msg.value, _luckyNumber);
+
+    // add amount sent to pot size
+    pot += msg.value;
+    // add new player to array
+    insertPlayer(Player(msg.sender, playerIndex, _luckyNumber));
+}
+\end{lstlisting}
+
+The modifier payable indicates that this function can recieve ether, timedTransitions and atState are explained in Section~\ref{sec:states}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Random Generation}\label{sec:random}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A random Generation in a deterministic Blockchain like the one Ethereum uses is impossible. Therefore the random number is calculated from the bblockhash of the next block generated after the state of the changed to ChooseWinner. In this state no additional bids are accepted. This method of calculating a pseudo-random number is potentially manipulateable, because a miner controlling about 50\% the Ethereum hash calculation could influence the next blockhash by invalidating the calculated block if he chooses. Since this magnitude of manipulation is extremely resource heavy, it is no feasable to use it for such small amounts of Ether used in this demo /ac{DApp}.
+
+Function to get the pseudo-random number:
+\begin{lstlisting}[language=Solidity]
+function getRandom(uint _maximum) public view returns (uint random) {
+    return uint(block.blockhash(block.number-1)) % _maximum + 1;
+}
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Choosing a Winner}\label{sec:winner}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The following snippet chooses all winners for a lottery round and lets them withdraw their share of the pot.
+
+\begin{lstlisting}[language=Solidity]
+function chooseWinner() public timedTransitions atState(States.ChooseWinner) {
+    // get random number
+    uint winningNumber = getRandom(maximum);
+
+    // trigger event
+    CalculatedNewRandom(winningNumber);
+
+    // get winners and insert them into winners array
+    getWinners(winningNumber);
+
+    if (winners.length > 0) {
+        // set the amount each winner can withdraw
+        setPendingWithdrawals();
+    }
+
+    // transition to Reset state
+    nextState();
+    clear();
+}
+
+function getWinners(uint winningNumber) internal {
+    for (uint i = 0; i < playerIndex; i++) {
+        if (players[i].luckyNumber == winningNumber) {
+            insertWinner(players[i]);
+        }
+    }
+}
+
+function setPendingWithdrawals() internal {
+    uint potPerWinner = pot / winners.length;
+    pot = 0;
+
+    for (uint i = 0; i < winnerIndex; i++) {
+        pendingWithdrawals[winners[i].id] += potPerWinner;
+        pastWinners.push(PastWinner(winners[i], potPerWinner, now));
+    }
+}
+\end{lstlisting}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Withdrawing Ether}\label{sec:withdraw}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The recommended method of sending funds after an effect is using the withdrawal pattern. Although the most intuitive method of sending Ether, as a result of an effect, is a direct send call, this is not recommended as it introduces a potential security risk.
+
+\begin{lstlisting}[language=Solidity]
+function withdraw() public {
+    uint amount = pendingWithdrawals[msg.sender];
+    // Remember to zero the pending refund before
+    // sending to prevent re-entrancy attacks
+    pendingWithdrawals[msg.sender] = 0;
+    msg.sender.transfer(amount);
+}
+\end{lstlisting}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{User Interface with Truffle Framework}\label{sec:truffle}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \chapterend
 
