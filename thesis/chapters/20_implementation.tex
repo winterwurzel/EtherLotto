@@ -3,6 +3,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapterstart
 
+This Chapter provides infromation about Solidity, the programming language used for the EtherLotto Smart Contract, the frontend implementation as well as the tools and frameworks used during development.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{ Smart Contract with Solidity}\label{sec:solidity}
@@ -33,6 +35,23 @@ contract SimpleStorage { // = collection of functions and data
     }
 }
 \end{lstlisting}
+
+\begin{flushright}
+Source: \citetitle{solidity}
+\end{flushright}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Solidity Remix \ac{IDE}}\label{sec:ide}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+For ease of use during development of the EtherLotto Smart Contract, the Remix \ac{IDE} for Solidity was used. The Remix \ac{IDE} is a Web \ac{IDE} designed for Solidity \ac{DApp} developers. It offers syntax highlighting, static analysis and debugging tools via a JavaScript \ac{EVM} running in the browser without any installation required by the developer.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[keepaspectratio,width=0.95\textwidth]{images/remix}
+  \caption[Remix IDE]{Remix IDE. Contract is running in a JavaScript \ac{EVM}, all functions can be called and debugged.}
+  \label{fig:remix}
+\end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -272,20 +291,194 @@ function withdraw() public {
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{User Interface with Truffle Framework}\label{sec:truffle}
+\section{Frontend with Truffle Framework}\label{sec:truffle}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Truffle is a JavaScript development framework for Ethereum. It provides built-in Smart Contract compilation, linking, deployment and binary management via an interactive console called the truffle environment or deployment scripts. In addition to that it also provides an environment for automated contract testing using either Solidity or JavaScript.
+
+More information on truffle and all its features can be found in the \citetitle{truffleDocs} and \citetitle{truffleTutorial}.
+
+\begin{flushright}
+Source: \citetitle{truffle}
+\end{flushright}
+
+Using truffle it is relatively easy to build a frontend for any type of interaction with a Smart Contract deployed on the Blockchain. Since the Smart Contract is also compiled and deployed with truffle, there are no extra steps necessary to give the frontend implementation the necessary artifact files. Artifact files provide the interface to communicate with a deployed Smart Contract and its functions.
+
+All that is left to do before communcation is possible, is to spcify a Provider. The Provider holds information on which Ethereum network to use and how to communicate with it without running a full Ethereum node which is usually needed to make transaction on the Ethereum Blockchain. At the time of writing, the easiest way to provide this is a broweser addon called /citetitle{metamask}. /citetitle{metamask} includes a secure identity vault, providing a user interface to manage your identities on different sites and sign blockchain transactions.
+
+The following shows an Example of how to call a Smart Contract function with JavaScript using Promises for safe execution and error handling.
+\begin{lstlisting}
+withdraw = () => {
+    this.EtherLotto
+        .deployed()
+        .then(instance => {
+        return instance.withdraw({from: this.account});
+    }).then(() => {
+        console.log('Withdraw complete!');
+        this.getBalance();
+    }).catch(function(e) {
+        console.log(e);
+        this.setStatus('Error withdrawing coins; see log.');
+    });
+};
+\end{lstlisting}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{User Interface}\label{sec:ui}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The User Interface for this demo \ac{DApp} was kept as simple as possible providing a Material Design approach using \citetitle{angularMaterial}.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[keepaspectratio,width=0.95\textwidth]{images/ui}
+  \caption[EtherLotto UI]{EtherLotto Material Design User Interface}
+  \label{fig:ui}
+\end{figure}
+
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Tests with Truffle Framework}\label{sec:truffleTest}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+As already mentioned in Section \nameref{sec:truffle}, truffle comes standard with automated contract testing framework using either Solidity or JavaScript.
+
+Truffle provides a clean room environment when running test files. When running tests against \citetitle{ganache}\footnote{Ganache provides a local Blockchain to run tests, execute commands and inspect states while controllin ghow the chain operates} or Truffle Develop, Truffle will use advanced snapshotting features to ensure test files don't share their state with each other.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Solidity Tests}\label{sec:solTest}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Solidity tests are included as a seperate test suite per test-contract during execution, have direct access to deployed contracts and can potentially import andy contract dependency. In addition to that, the assertion library can be changed at any time and tests can be run against any Ethereum client. More information can be found in the \citetitle{truffleDocs}.
+
+Example of a simple Solidity test:
+\begin{lstlisting}[language=Solidity]
+pragma solidity ^0.4.2;
+
+import "truffle/Assert.sol";
+import "truffle/DeployedAddresses.sol";
+import "../contracts/EtherLotto.sol";
+
+
+contract TestEtherLotto {
+    // Truffle will send the TestContract one Ether after deploying the contract.
+    uint public initialBalance = 1 ether;
+
+    function testInitialPotBalance() public {
+        EtherLotto etherLotto = EtherLotto(DeployedAddresses.EtherLotto());
+
+        uint expextedPot = 0;
+
+        Assert.equal(etherLotto.getPotBalance(), expextedPot, "Initial Pot Balance should always be 0");
+    }
+}
+\end{lstlisting}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Javascript Tests}\label{sec:jsTest}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Truffle uses the \citetitle{mocha} unit testing framework and therefore works mostly similiar to a standard Mocha test. The only exception is that instead of \lstinline{describe()}, the truffle specific \lstinline{contract()} function is used. This enables all clean room features described in Section \nameref{sec:truffleTest}. 
+
+This means that:
+\begin{itemize}
+    \item Before each \lstinline{contract()} function is run, all contracts are re-deployed to provide a clean state.
+    \item The \lstinline{contract()} function provides a list of test accounts made available by the Ethereum client.
+\end{itemize}
+
+The following code snippet shows a JavaScript test to validate the pot balance after one recieved bid using the NewBidRecieved Event implemented in the EtherLotto Smart Contract.
+\begin{lstlisting}[language=JavaScript]
+var EtherLotto = artifacts.require("EtherLotto");
+
+contract('EtherLotto', function(accounts) {
+  it("test contract deployed", function() {
+    return EtherLotto.deployed().then(function(instance) {
+      assert(instance != undefined, "contract is not correctly deployed");
+    });
+  });
+
+  it("test pot balance after one bid", function() {
+    var etherLotto;
+    var expectedBid = 200000000000000000;
+    var expectedLuckyNumber = 1;
+    var expectedIndex = 0;
+
+    return EtherLotto.deployed().then(function(instance) {
+      etherLotto = instance;
+      // execute bid function
+      return etherLotto.bid(expectedLuckyNumber, {from: accounts[0], value: expectedBid});
+    }).then(function(result) {
+
+      var recievedBidValue;
+      var recievedPlayerAddress;
+      var recievedLuckyNumber;
+      var recievedIndex;
+
+      // parse result for NewBidRecieved-Event
+      for (var i = 0; i < result.logs.length; i++) {
+        var log = result.logs[i];
+
+        if (log.event == "NewBidRecieved") {
+          recievedPlayerAddress = log.args.id;
+          recievedBidValue = log.args.amount.toNumber();
+          recievedLuckyNumber = log.args.luckyNumber.toNumber();
+          recievedIndex = log.args.index.toNumber();
+        }
+      }
+
+      assert.equal(recievedPlayerAddress, accounts[0], "address from event and sender address need to match");
+      assert.equal(recievedBidValue, expectedBid, "bid value from event and sent bid have to match");
+      assert.equal(recievedIndex, expectedIndex, "index should match");
+      assert.equal(recievedLuckyNumber, expectedLuckyNumber, "lucky Number should match");
+
+      return etherLotto.getPotBalance();
+    }).then(function(balance) {
+      // check pot balance
+      assert.equal(balance.toNumber(), expectedBid, "wrong value in potBalance, bid went wrong");
+    });
+  });
+});
+\end{lstlisting}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Executing Tests}\label{sec:execTests}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The easiest way to run Truffle tests is with the built-in Ethereum CLient and interactive shell. To start it simply run the following command in the root directory of the truffle project.
+\begin{lstlisting}[language=bash]
+$ truffle develop
+\end{lstlisting}
+This will start a local Ethereum Blockchain and generate accounts with some Ether in their wallet.
+
+Using the interactive shell, the tests can now be run directly.
+\begin{lstlisting}[language=bash]
+truffle(develop)> test
+Using network 'develop'.
+
+Compiling ./contracts/EtherLotto.sol...
+Compiling ./test/TestEtherLotto.sol...
+Compiling truffle/Assert.sol...
+Compiling truffle/DeployedAddresses.sol...
+
+
+  TestEtherLotto
+     testInitialPotBalance (71ms)
+
+  Contract: EtherLotto
+     test contract deployed
+     test pot balance after one bid (55ms)
+
+  Contract: EtherLotto
+     test a full lottery (577ms)
+
+
+  4 passing (1s)
+\end{lstlisting}
+
+
 
 
 \chapterend

@@ -2,7 +2,7 @@
 kile_livePreviewEnabled=true
 kile_livePreviewStatusUserSpecified=true
 kile_livePreviewTool=LivePreview-PDFLaTeX
-lastDocument=chapters/20_implementation.tex
+lastDocument=thesis.tex
 
 [document-settings,item:chapters/00_preamble.tex]
 Bookmarks=
@@ -140,11 +140,11 @@ Mode=LaTeX
 Mode Set By User=false
 
 [item:chapters/01_titlepage.tex]
-open=true
+open=false
 order=1
 
 [item:chapters/03_abstract.tex]
-open=true
+open=false
 order=2
 
 [item:chapters/09_latex_info.tex]
@@ -153,19 +153,19 @@ order=3
 
 [item:chapters/10_introduction.tex]
 open=true
-order=4
+order=0
 
 [item:chapters/15_lottery_rules.tex]
 open=true
-order=5
+order=1
 
 [item:chapters/20_implementation.tex]
 open=true
-order=6
+order=2
 
 [item:chapters/30_setup.tex]
 open=true
-order=7
+order=3
 
 [item:chapters/90_conclusion.tex]
 open=false
@@ -173,7 +173,7 @@ order=-1
 
 [item:chapters/99_acronyms.tex]
 open=true
-order=8
+order=4
 
 [item:images/engine.jpg]
 open=false
@@ -185,7 +185,7 @@ order=-1
 
 [item:references.bib]
 open=true
-order=9
+order=5
 
 [item:src/closure.js]
 open=false
@@ -197,7 +197,7 @@ order=-1
 
 [item:thesis.tex]
 open=true
-order=0
+order=6
 
 [view-settings,view=0,item:chapters/00_preamble.tex]
 CursorColumn=29
@@ -235,8 +235,8 @@ TextFolding=[]
 ViMarks=
 
 [view-settings,view=0,item:chapters/09_latex_info.tex]
-CursorColumn=0
-CursorLine=147
+CursorColumn=33
+CursorLine=30
 JumpList=
 TextFolding=[]
 ViMarks=
@@ -249,25 +249,25 @@ TextFolding=[]
 ViMarks=.,20,31,[,20,0,],20,31
 
 [view-settings,view=0,item:chapters/15_lottery_rules.tex]
-CursorColumn=55
-CursorLine=5
+CursorColumn=0
+CursorLine=6
 JumpList=
 TextFolding=[]
 ViMarks=.,12,95,[,12,95,],12,95
 
 [view-settings,view=0,item:chapters/20_implementation.tex]
-CursorColumn=8
-CursorLine=271
+CursorColumn=27
+CursorLine=313
 JumpList=
 TextFolding=[]
-ViMarks=.,271,0,[,271,0,],271,7
+ViMarks=.,391,37,[,391,28,],391,37
 
 [view-settings,view=0,item:chapters/30_setup.tex]
 CursorColumn=0
-CursorLine=15
+CursorLine=40
 JumpList=
 TextFolding=[]
-ViMarks=.,15,0,[,15,0,],15,0
+ViMarks=.,37,0,[,37,0,],37,1
 
 [view-settings,view=0,item:chapters/60_implementation.tex]
 CursorColumn=0
@@ -277,29 +277,29 @@ TextFolding=[]
 ViMarks=
 
 [view-settings,view=0,item:chapters/90_conclusion.tex]
-CursorColumn=0
-CursorLine=0
+CursorColumn=11
+CursorLine=7
 JumpList=
 TextFolding=[]
 ViMarks=
 
 [view-settings,view=0,item:chapters/99_acronyms.tex]
-CursorColumn=29
-CursorLine=9
+CursorColumn=0
+CursorLine=13
 JumpList=
 TextFolding=[]
-ViMarks=.,9,28,[,9,28,],9,28
+ViMarks=.,10,46,[,10,13,],10,46
 
 [view-settings,view=0,item:references.bib]
-CursorColumn=24
-CursorLine=2
+CursorColumn=21
+CursorLine=59
 JumpList=
 TextFolding=[]
-ViMarks=.,2,23,[,2,17,],2,23
+ViMarks=.,59,12,[,59,12,],59,20
 
 [view-settings,view=0,item:thesis.tex]
-CursorColumn=27
-CursorLine=81
+CursorColumn=4
+CursorLine=54
 JumpList=
 TextFolding=[]
-ViMarks=.,81,26,[,81,26,],81,26
+ViMarks=.,54,3,[,54,3,],54,3
