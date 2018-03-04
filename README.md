@@ -18,11 +18,6 @@ This is potentially manipulateable, because miners could influence the next bloc
 But for small amounts of money, the manipulation is not feasable.
 
 
-## Todo
-
-* terminal application to automatically transition between states
-* possible: python, node, geth (https://github.com/ethereum/go-ethereum)
-
 ## Setup
 
 ### General
@@ -32,14 +27,14 @@ Requires npm.
 ```
 npm install -g truffle
 npm install -g @angular/cli
-git clone https://github.com/winterwurzel/EtherLotto.git && cd web
+git clone https://github.com/winterwurzel/EtherLotto.git && cd etherlotto_v2
 npm install
 ```
 
 ### Running tests
 
 ```
-cd web
+cd etherlotto_v2
 truffle develop
 test
 ```
@@ -55,10 +50,23 @@ Install and configure [MetaMask](https://metamask.io/) to use the Local Testnetw
 Additional Accounts can be import through their private keys. 
 
 ```
-cd web
+cd etherlotto_v2
 truffle compile
 truffle migrate
-npm run dev
+ng serve
 ```
 
-Now the Webapp will be available at localthost:8080.
+Now the Webapp will be available at http://localhost:4200/.
+
+### Running a local node server to automaticcally choose the winner and transition to next state
+Choosing a winner and transitioning to the next state can also be done via the Dev Tools in the Webapp.
+
+
+One local Ethereum address and private key as well as the contract address needs to be manually set.
+
+```
+cd node
+npm install
+node app.local.js
+```
+
