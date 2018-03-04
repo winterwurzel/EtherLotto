@@ -246,7 +246,7 @@ CursorColumn=0
 CursorLine=7
 JumpList=
 TextFolding=[]
-ViMarks=.,20,31,[,20,0,],20,31
+ViMarks=.,0,0,[,0,0,],0,0
 
 [view-settings,view=0,item:chapters/15_lottery_rules.tex]
 CursorColumn=0
@@ -298,8 +298,8 @@ TextFolding=[]
 ViMarks=.,59,12,[,59,12,],59,20
 
 [view-settings,view=0,item:thesis.tex]
-CursorColumn=4
-CursorLine=54
+CursorColumn=21
+CursorLine=23
 JumpList=
 TextFolding=[]
 ViMarks=.,54,3,[,54,3,],54,3
