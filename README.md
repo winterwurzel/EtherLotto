@@ -2,6 +2,8 @@
 
 A simple Ethereum Dapp (Distributed Application) using the [Truffle Framework](http://truffleframework.com/) to play Lotto with other users.
 
+[Link to the Documentation](https://github.com/winterwurzel/EtherLotto/blob/master/thesis/tmp/thesis.pdf)
+
 ## Rules v2
 
 * Users have to bid fixed amount of EtherLotto (0.2 ETH)
