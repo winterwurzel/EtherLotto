@@ -2,7 +2,7 @@
 kile_livePreviewEnabled=true
 kile_livePreviewStatusUserSpecified=true
 kile_livePreviewTool=LivePreview-PDFLaTeX
-lastDocument=thesis.tex
+lastDocument=chapters/20_implementation.tex
 
 [document-settings,item:chapters/00_preamble.tex]
 Bookmarks=
@@ -140,7 +140,7 @@ Mode=LaTeX
 Mode Set By User=false
 
 [item:chapters/01_titlepage.tex]
-open=true
+open=false
 order=1
 
 [item:chapters/03_abstract.tex]
@@ -152,19 +152,19 @@ open=true
 order=3
 
 [item:chapters/10_introduction.tex]
-open=false
+open=true
 order=0
 
 [item:chapters/15_lottery_rules.tex]
-open=false
+open=true
 order=1
 
 [item:chapters/20_implementation.tex]
-open=false
+open=true
 order=2
 
 [item:chapters/30_setup.tex]
-open=false
+open=true
 order=3
 
 [item:chapters/90_conclusion.tex]
@@ -172,7 +172,7 @@ open=false
 order=-1
 
 [item:chapters/99_acronyms.tex]
-open=false
+open=true
 order=4
 
 [item:images/engine.jpg]
@@ -184,7 +184,7 @@ open=false
 order=-1
 
 [item:references.bib]
-open=false
+open=true
 order=5
 
 [item:src/closure.js]
@@ -197,7 +197,7 @@ order=-1
 
 [item:thesis.tex]
 open=true
-order=0
+order=6
 
 [view-settings,view=0,item:chapters/00_preamble.tex]
 CursorColumn=29
@@ -298,8 +298,8 @@ TextFolding=[]
 ViMarks=.,59,12,[,59,12,],59,20
 
 [view-settings,view=0,item:thesis.tex]
-CursorColumn=34
-CursorLine=18
+CursorColumn=31
+CursorLine=29
 JumpList=
 TextFolding=[]
-ViMarks=.,18,33,[,18,33,],18,33
+ViMarks=.,54,3,[,54,3,],54,3

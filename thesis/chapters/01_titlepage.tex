@@ -20,9 +20,66 @@
   \subtitle
   \vspace{2.0cm}
   
+\ifdefined\isMasterThesis % MA
 
-    {\bf Project Work}\\
+  \ifthenelse{\equal{\yourLanguage}{german}}{ % German Version 
+
+   {\bf Masterarbeit}\\
+    zur Erlangung des akademischen Grades\\
+   
+    \ifthenelse{\equal{\study}{IRM}}{ % IRM Master of Arts
   
+      {\bf Master of Arts in Business (MA)}\\
+      eingereicht am\\
+      Fachhochschul-Studiengang {\bf \theStudyProgramme \\}
+  
+    }{  % else: IMS = Master of Science
+      
+      {\bf Master of Science in Engineering (MSc)}\\
+      eingereicht am\\
+      Fachhochschul-Studiengang {\bf \theStudyProgramme \\}
+      
+   }
+
+  }{ % English Version 
+
+    {\bf Master Thesis}\\
+    submitted in conformity with the requirements for the degree of\\
+   
+    \ifthenelse{\equal{\study}{IRM}}{ % IRM Master of Arts
+  
+      {\bf Master of Arts in Business (MA)}\\
+      Master's degree programme {\bf \theStudyProgramme \\}
+  
+    }{  % else: IMS = Master of Science
+      
+      {\bf Master of Science in Engineering (MSc)}\\
+      Master's degree programme {\bf \theStudyProgramme \\}
+      
+   }
+
+  } 
+\else % BA
+  
+  \ifthenelse{\equal{\yourLanguage}{german}}{ % German Version 
+  
+  {\bf Bachelorarbeit}\\
+  zur Erlangung des akademischen Grades\\
+  {\bf Bachelor of Science in Engineering (BSc)}\\
+  
+  eingereicht am\\
+  Fachhochschul-Studiengang {\bf \theStudyProgramme \\}
+
+  }{ % English Version 
+  
+  {\bf Bachelor Thesis}\\
+  submitted in conformity with the requirements for the degree of\\
+  {\bf Bachelor of Science in Engineering (BSc)}\\
+  Bachelor's degree programme {\bf \theStudyProgramme \\}
+
+  }
+
+\fi
   
   \vspace{0.5cm}
 
@@ -31,10 +88,25 @@
   \vspace{1.5cm}
 
   \mbox{}
-  {\bf 
 
-  submitted by: \yourName\\}
+  \ifthenelse{\equal{\yourLanguage}{german}}{ % German Version
+
+  {\bf Betreuer/in: \yourAdvisor\\
+   % Zweit-/Firmenbetreuer/in: <Vorname Zuname; Firmenname>
+
+  eingereicht von: \yourName\\
+  Personenkennzahl: \yourIdentifier}
   
+  
+  }{ % English Version 
+
+  {\bf supervisor: \yourAdvisor\\ 
+  % second supervisor: <firstname lastname; company>
+
+  submitted by: \yourName\\
+  personal identifier: \yourIdentifier}
+  
+  }
 
   \vspace{1.5cm}
 
