@@ -1,0 +1,24 @@
+Intro
+General Information about used Software
+	Cryptocurrency
+	Blockchain
+	Ethereum
+	Smart Contracts
+		Solidity
+Related Work
+Concept Demo DApp
+	Lottery Rules
+Implementation
+	Used Tools
+	The Contract
+	Truffle Framework
+	UI
+	Tests
+Setup example
+	Local
+	Test/Live-Network
+Pseudo Random
+Comparison Traditional vs. Smart Contract
+Security Considerations
+Conlusion
+	
