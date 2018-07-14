@@ -2,7 +2,7 @@
 kile_livePreviewEnabled=true
 kile_livePreviewStatusUserSpecified=true
 kile_livePreviewTool=LivePreview-PDFLaTeX
-lastDocument=thesis.tex
+lastDocument=chapters/01_titlepage.tex
 
 [document-settings,item:chapters/00_preamble.tex]
 Bookmarks=
@@ -264,10 +264,10 @@ ViMarks=.,391,37,[,391,28,],391,37
 
 [view-settings,view=0,item:chapters/30_setup.tex]
 CursorColumn=0
-CursorLine=40
+CursorLine=0
 JumpList=
 TextFolding=[]
-ViMarks=.,37,0,[,37,0,],37,1
+ViMarks=.,-1,-1,[,-1,-1,],-1,-1
 
 [view-settings,view=0,item:chapters/60_implementation.tex]
 CursorColumn=0
@@ -298,8 +298,8 @@ TextFolding=[]
 ViMarks=.,59,12,[,59,12,],59,20
 
 [view-settings,view=0,item:thesis.tex]
-CursorColumn=34
-CursorLine=18
+CursorColumn=2
+CursorLine=85
 JumpList=
 TextFolding=[]
-ViMarks=.,18,33,[,18,33,],18,33
+ViMarks=.,85,30,[,85,20,],85,30
