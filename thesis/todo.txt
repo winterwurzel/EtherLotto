@@ -20,5 +20,5 @@ Setup example
 Pseudo Random
 Comparison Traditional vs. Smart Contract
 Security Considerations
-Conlusion
+Conclusion
 	
